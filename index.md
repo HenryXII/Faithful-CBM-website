@@ -1,3 +1,8 @@
+---
+title: "Faithful CBM - Building Faithful and Interpretable Deep Neural Network models"
+layout: default
+---
+
 ## Abstract
 
 Deep neural networks' black-box nature raises concerns about interpretability in critical applications. While recent Concept Bottleneck Models (CBMs) using Vision-Language Models have improved transparency, they struggle with concept prediction accuracy and faithfulness. We propose an expert-in-the-loop framework with three key innovations:
