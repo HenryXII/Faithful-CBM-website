@@ -14,9 +14,9 @@ Our method significantly improves the model's spatial faithfulness while maintai
 
 ### Concept Bottleneck Models (CBMs)
 
-<img src="/assets/images/teaser.png" alt="Concept Bottleneck Model" width="80%" class="center-image">
+<img src="assets/images/teaser.png" alt="Concept Bottleneck Model" width="80%" class="center-image">
 
-<img src="/assets/images/intervention_fig.png" alt="Concept Bottleneck Model" width="80%" class="center-image">
+<img src="assets/images/intervention_fig.png" alt="Concept Bottleneck Model" width="80%" class="center-image">
 
 Concept Bottleneck Models address lack of transparency in deep neural networks by introducing a concept bottleneck layer (CBL) before the final output layer that captures human-interpretable concepts. Instead of making predictions directly from raw data, the model identifies familiar concepts first—such as "wheels" and "headlights" in an image of a car—and then uses these concepts to reach its final decision. 
 
