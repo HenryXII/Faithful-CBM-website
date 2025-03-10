@@ -11,6 +11,17 @@ Deep neural networks' black-box nature raises concerns about interpretability in
 2. A novel faithfulness measurement comparing spatial attribution maps with GroundingDINO bounding boxes
 3. Fine-tuning concept neurons with saliency loss
 
+<div class="image-comparison" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 10px;">
+  <figure style="margin: 0; width: 45%;">
+    <img src="assets/images/origin roof.png" alt="Original Roof" style="width: 100%;">
+    <figcaption style="text-align: center;">Original Roof</figcaption>
+  </figure>
+  <figure style="margin: 0; width: 45%;">
+    <img src="assets/images/fine-tuned roof.png" alt="Fine-tuned Roof" style="width: 100%;">
+    <figcaption style="text-align: center;">Fine-tuned Roof</figcaption>
+  </figure>
+</div>
+<p style="text-align: center;">IoU: 0.111→0.580, saliency ratio: 0.600→2.866</p>
 Our method significantly improves the model's spatial faithfulness while maintaining comparable accuracy.
 
 * * *
@@ -38,9 +49,8 @@ Recent research has explored using Vision-Language Models (VLMs) as an alternati
 
 Despite progress, these approaches face limitations:
 - Inaccurate concept prediction
-- Models frequently misidentify concepts
 - Automatic Concept Correction may cause concept neurons to fit to class rather than concept
-- Lowered faithfulness and interpretability
+
 
 * * *
 
@@ -61,7 +71,11 @@ Our solution:
 - Used few-shot learning to guide GPT-4 toward desired concept types
 - For critical applications, expert knowledge can refine LLM-generated concepts
 
+<img src="assets/images/gpt.png" alt="GPT prompt" width="60%" class="center-image">
+
 ### 2. Faithfulness Measurement
+
+<img src="assets/images/measurement diagram.png" alt="measurement diagram" width="100%" class="center-image">
 
 We measure faithfulness with attribution map and GroundingDINO bounding boxes alignment:
 
@@ -79,7 +93,7 @@ We compute three key statistics:
 In addition to Binary Cross Entropy (BCE) loss for multi-label prediction, we defined a saliency loss to ensure concept neurons focus on correct image regions:
 
 ```
-L_sal = RELU(saliency outside bboxes - saliency inside bboxes + 0.5)
+Saliency Loss = RELU(saliency outside bboxes - saliency inside bboxes + 0.5)
 ```
 
 This loss helps concept neurons pay attention to the intended visual features rather than fitting to class-specific patterns.
@@ -100,7 +114,19 @@ When comparing overall metrics between original and refined concept sets for mut
 | Saliency ratio | 1.185 | 1.235 |
 | % Saliency capture | 0.232 | 0.254 |
 
-We discovered a correlation between the number of training images and concept faithfulness. In the refined concept set, each concept was trained with 144 images on average (compared to 60 in the original set).
+<img src="assets/images/image counts.png" alt="image counts" width="80%" class="center-image">
+
+We discovered a correlation between the number of training images and concept faithfulness. In the refined concept set, each concept was trained with 144 images on average (compared to 60 in the original set), leading to more faithful learning of the part. For example, the concept "brown wings" was originally fitting to a single bird class, but after refinement, the top activating images contain birds with brown wings from multiple classes.
+
+<figure style="margin: 20px 0; text-align: center;">
+  <img src="assets/images/combined_brown_wings_original.png" alt="Original brown wings concept" width="90%" class="center-image">
+  <figcaption style="margin-top: 8px; font-style: italic;">Original "brown wings" concept neuron primarily activating for a single bird class</figcaption>
+</figure>
+
+<figure style="margin: 20px 0; text-align: center;">
+  <img src="assets/images/combined_brown_wings_refined.png" alt="Refined brown wings concept" width="90%" class="center-image">
+  <figcaption style="margin-top: 8px; font-style: italic;">Refined "brown wings" concept neuron activating for multiple bird classes with brown wings</figcaption>
+</figure>
 
 ### Fine-tuning Results
 
@@ -113,9 +139,28 @@ Fine-tuning with saliency loss produced promising results:
 | Places365 finetune "roof" | 3.102 (from 1.219) | Similar to original | 2h per epoch |
 
 Visual examples show significant improvements:
-- "Roof" concept: IoU improved from 0.111 to 0.580, saliency ratio from 0.600 to 2.866
-- "Long Pointed Wings": IoU from 0.294 to 0.368, saliency ratio from 1.115 to 1.467
-- "Black Head": IoU from 0.150 to 0.176, saliency ratio from 1.372 to 1.769
+<div class="image-comparison" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 10px; margin-top: 30px;">
+  <figure style="margin: 0; width: 45%;">
+    <img src="assets/images/original wings.png" alt="Original Long Pointed Wings" style="width: 100%;">
+    <figcaption style="text-align: center;">Original Long Pointed Wings</figcaption>
+  </figure>
+  <figure style="margin: 0; width: 45%;">
+    <img src="assets/images/fine-tuned wings.png" alt="Fine-tuned Long Pointed Wings" style="width: 100%;">
+    <figcaption style="text-align: center;">Fine-tuned Long Pointed Wings</figcaption>
+  </figure>
+</div>
+<p style="text-align: center;">IoU: 0.294→0.368, saliency ratio: 1.115→1.467</p>
+<div class="image-comparison" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 10px;">
+  <figure style="margin: 0; width: 45%;">
+    <img src="assets/images/original black head.png" alt="Original Black Head" style="width: 100%;">
+    <figcaption style="text-align: center;">Original Black Head</figcaption>
+  </figure>
+  <figure style="margin: 0; width: 45%;">
+    <img src="assets/images/fine-tuned black head.png" alt="Fine-tuned Black Head" style="width: 100%;">
+    <figcaption style="text-align: center;">Fine-tuned Black Head</figcaption>
+  </figure>
+</div>
+<p style="text-align: center;">IoU: 0.150→0.176, saliency ratio: 1.372→1.769</p>
 
 ### Key Observations
 
